@@ -51,7 +51,6 @@ test("add helper → record (typed) → confirm → ledger → payday → paid �
 
   // Home
   await expect(page.getByTestId("total-owed")).toHaveText("₹17,000");
-  await expect(page.getByText("Saved on this phone")).toBeVisible();
 
   // Record (typed)
   await page.getByRole("button", { name: "Record payment" }).click();

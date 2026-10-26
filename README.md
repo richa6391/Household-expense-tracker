@@ -6,7 +6,7 @@ Record salary advances and loans from a WhatsApp or UPI screenshot or a typed li
 and creates a statement in English or Hindi to share on WhatsApp.
 
 - No login, no database. All data lives in the browser's `localStorage` (key `payslip-for-help:v1`).
-  Use **Download backup** on the helpers screen to keep a JSON copy (there is no in-app restore).
+  There is no backup or restore yet; clearing browser data or changing phones loses it.
 - One server route, `POST /api/extract`, calls OpenAI (vision + strict JSON schema).
   The API key stays on the server.
 - All money maths lives in [`lib/calc.ts`](lib/calc.ts), never in the AI.

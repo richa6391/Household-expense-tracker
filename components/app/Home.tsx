@@ -1,7 +1,7 @@
 "use client";
 
 import { balances, formatINR, nextPaydayDate, ordinal, shortDate } from "@/lib/calc";
-import { Chevron, Download, Plus, Users } from "../Icons";
+import { Chevron, Plus, Users } from "../Icons";
 import { BottomBar, type Ctx, initial } from "./ui";
 
 export default function Home({ ctx }: { ctx: Ctx }) {
@@ -34,27 +34,10 @@ export default function Home({ ctx }: { ctx: Ctx }) {
     .map((h) => ({ h, date: nextPaydayDate(h.paydayDay, today, data.paydays.filter((p) => p.helperId === h.id)) }))
     .sort((a, b) => (a.date < b.date ? -1 : 1))[0];
 
-  const download = () => {
-    try {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `payslip-for-help-backup-${today}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch {
-      window.alert("Couldn't create the backup file.");
-    }
-  };
-
   return (
     <>
-      <header className="topbar" style={{ justifyContent: "space-between" }}>
+      <header className="topbar">
         <h1>My helpers</h1>
-        <span className="muted small">Saved on this phone</span>
       </header>
 
       <div className="card blue">
@@ -97,13 +80,6 @@ export default function Home({ ctx }: { ctx: Ctx }) {
       <button type="button" className="btn btn-dashed" onClick={() => ctx.push({ name: "add" })}>
         <Plus /> Add another helper
       </button>
-
-      <div className="center" style={{ marginTop: 16 }}>
-        <button type="button" className="link-btn muted" onClick={download}>
-          <Download size={16} style={{ verticalAlign: -3, marginRight: 4 }} />
-          Download backup
-        </button>
-      </div>
 
       <BottomBar>
         <button
