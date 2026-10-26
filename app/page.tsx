@@ -50,7 +50,7 @@ export default function Landing() {
         </li>
         <li>
           <span className="ic"><Calendar /></span>
-          <span><strong>Payday worked out.</strong> <span className="muted">Advance, loan instalment and extra leave are cut correctly, every month.</span></span>
+          <span><strong>Payday worked out.</strong> <span className="muted">Advance, loan instalment and leave days are cut correctly, every month.</span></span>
         </li>
         <li>
           <span className="ic"><Share /></span>

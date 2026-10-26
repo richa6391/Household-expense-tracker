@@ -11,7 +11,6 @@ export default function AddHelper({ ctx }: { ctx: Ctx }) {
   const [role, setRole] = useState<Role>("Maid");
   const [salary, setSalary] = useState("");
   const [payday, setPayday] = useState("");
-  const [paidLeave, setPaidLeave] = useState("2");
   const [owes, setOwes] = useState(false);
   const [advance, setAdvance] = useState("");
   const [loan, setLoan] = useState("");
@@ -27,7 +26,6 @@ export default function AddHelper({ ctx }: { ctx: Ctx }) {
       role,
       salary: parseAmount(salary),
       paydayDay: Number(payday),
-      paidLeave: Math.max(0, Math.min(31, Number(paidLeave) || 0)),
       createdAt: now,
     };
     const opening: Entry[] = [];
@@ -81,17 +79,6 @@ export default function AddHelper({ ctx }: { ctx: Ctx }) {
               </option>
             ))}
           </select>
-        </label>
-
-        <label className="field">
-          <span className="lbl">Paid leave per month (days)</span>
-          <input
-            className="input"
-            inputMode="numeric"
-            value={paidLeave}
-            onChange={(e) => setPaidLeave(e.target.value.replace(/[^\d]/g, "").slice(0, 2))}
-          />
-          <span className="hint">Leave beyond this is cut at salary ÷ 30 per day.</span>
         </label>
 
         <div className="card">

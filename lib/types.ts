@@ -18,7 +18,6 @@ export interface Helper {
   role: Role;
   salary: number;
   paydayDay: number; // 1–28
-  paidLeave: number; // days per month
   createdAt: string;
 }
 

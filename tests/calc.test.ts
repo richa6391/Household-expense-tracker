@@ -23,7 +23,6 @@ const sunita: Helper = {
   role: "Maid",
   salary: 18000,
   paydayDay: 1,
-  paidLeave: 2,
   createdAt: "2026-10-01T00:00:00Z",
 };
 
@@ -96,13 +95,14 @@ describe("balances", () => {
 });
 
 describe("leave cut", () => {
-  it("cuts only days beyond paid leave at salary ÷ 30, rounded to ₹10", () => {
-    expect(leaveCut(6, 2, 18000)).toBe(2400);
-    expect(leaveCut(2, 2, 18000)).toBe(0);
-    expect(leaveCut(1, 2, 18000)).toBe(0);
-    expect(leaveCut(3, 0, 10000)).toBe(1000);
-    expect(leaveCut(1, 0, 7000)).toBe(230); // 233.33 → 230
-    expect(leaveCut(1, 0, 7100)).toBe(240); // 236.67 → 240
+  it("cuts every leave day at salary ÷ 30, rounded to ₹10", () => {
+    expect(leaveCut(4, 18000)).toBe(2400);
+    expect(leaveCut(1, 18000)).toBe(600);
+    expect(leaveCut(0, 18000)).toBe(0);
+    expect(leaveCut(-2, 18000)).toBe(0);
+    expect(leaveCut(3, 10000)).toBe(1000);
+    expect(leaveCut(1, 7000)).toBe(230); // 233.33 → 230
+    expect(leaveCut(1, 7100)).toBe(240); // 236.67 → 240
   });
 });
 
@@ -134,12 +134,12 @@ describe("payday rules", () => {
 });
 
 describe("acceptance test", () => {
-  it("₹18,000 salary, 6,000 advance, 2,000 loan cut, 6 leave days → pay ₹7,600", () => {
+  it("₹18,000 salary, 6,000 advance, 2,000 loan cut, 4 leave days → pay ₹7,600", () => {
     const entries = opening();
     const owed = balances(entries, "h1");
     expect(owed).toEqual({ advance: 6000, loan: 14000, total: 20000 });
 
-    const lc = leaveCut(6, sunita.paidLeave, sunita.salary);
+    const lc = leaveCut(4, sunita.salary);
     expect(lc).toBe(2400);
 
     const r = computePayday({
@@ -161,7 +161,7 @@ describe("acceptance test", () => {
       monthLabel: "October 2026",
       advanceCut: 6000,
       loanCut: 2000,
-      leaveDays: 6,
+      leaveDays: 4,
       leaveCut: lc,
       note: "",
       now: "2026-11-01T10:00:00Z",
@@ -240,7 +240,7 @@ describe("given vs recovered chart", () => {
 describe("statement", () => {
   const payday = {
     id: "p", helperId: "h1", date: "2026-11-01", monthLabel: "October 2026", salary: 18000,
-    advanceCut: 6000, loanCut: 2000, leaveDays: 6, leaveCut: 2400, pay: 7600, note: "",
+    advanceCut: 6000, loanCut: 2000, leaveDays: 4, leaveCut: 2400, pay: 7600, note: "",
     advanceAfter: 0, loanAfter: 12000,
   };
   it("Hindi", () => {
@@ -248,7 +248,7 @@ describe("statement", () => {
     expect(t).toContain("वेतन: ₹18,000");
     expect(t).toContain("एडवांस कटौती: −₹6,000");
     expect(t).toContain("लोन किस्त: −₹2,000");
-    expect(t).toContain("छुट्टी (4 अतिरिक्त दिन): −₹2,400");
+    expect(t).toContain("छुट्टी (4 दिन): −₹2,400");
     expect(t).toContain("दिया गया: ₹7,600");
     expect(t).toContain("बाकी: एडवांस ₹0 · लोन ₹12,000");
   });

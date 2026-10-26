@@ -5,7 +5,6 @@ import {
   balances,
   computePayday,
   defaultAdvanceCut,
-  extraLeaveDays,
   formatINR,
   leaveCut as calcLeaveCut,
   markPaid,
@@ -34,7 +33,6 @@ export default function PaydayScreen({ ctx, helperId }: { ctx: Ctx; helperId: st
   const monthLabel = `${MONTHS_LONG[sm.month]} ${sm.year}`;
 
   const days = Number(leaveDays) || 0;
-  const extra = extraLeaveDays(days, helper.paidLeave);
   const r = computePayday({
     salary: helper.salary,
     advanceCut: parseAmount(advanceCut),
@@ -47,7 +45,7 @@ export default function PaydayScreen({ ctx, helperId }: { ctx: Ctx; helperId: st
   const onLeaveDays = (v: string) => {
     const clean = v.replace(/[^\d]/g, "").slice(0, 2);
     setLeaveDays(clean);
-    setLeaveCut(String(calcLeaveCut(Number(clean) || 0, helper.paidLeave, helper.salary)));
+    setLeaveCut(String(calcLeaveCut(Number(clean) || 0, helper.salary)));
   };
 
   const pay = () => {
@@ -103,14 +101,14 @@ export default function PaydayScreen({ ctx, helperId }: { ctx: Ctx; helperId: st
         <div className="pay-row">
           <label className="lbl" htmlFor="leave-days">Leave days taken</label>
           <input id="leave-days" className="input" inputMode="numeric" value={leaveDays} onChange={(e) => onLeaveDays(e.target.value)} aria-describedby="leave-days-hint" />
-          <span className="hint" id="leave-days-hint">{helper.paidLeave} paid day{helper.paidLeave === 1 ? "" : "s"} allowed</span>
+          <span className="hint" id="leave-days-hint">Each day is cut at salary ÷ 30</span>
         </div>
 
         <div className="pay-row">
           <label className="lbl" htmlFor="leave-cut">Leave cut</label>
           <MoneyInput id="leave-cut" value={leaveCut} onChange={setLeaveCut} describedBy="leave-cut-hint" />
           <span className="hint" id="leave-cut-hint">
-            {extra} extra day{extra === 1 ? "" : "s"} × {formatINR(perDayRate(helper.salary))} · auto, editable
+            {days} day{days === 1 ? "" : "s"} × {formatINR(perDayRate(helper.salary))} · auto, editable
           </span>
         </div>
       </div>

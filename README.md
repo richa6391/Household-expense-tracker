@@ -51,12 +51,12 @@ If you add or change an environment variable later, redeploy for it to take effe
 
 - Advance owed = Σ advance − Σ advance cut. Loan owed = Σ loan − Σ loan cut.
   Bonus, salary and leave entries never count as money owed.
-- Leave cut = max(leave days − paid leave, 0) × salary ÷ 30, rounded to the nearest ₹10.
+- Leave cut = leave days × salary ÷ 30, rounded to the nearest ₹10. Every leave day is cut.
 - Pay = salary − advance cut − loan cut − leave cut.
 - A cut can't be more than what's owed, and pay can't go below ₹0.
 
-Example: salary ₹18,000, 2 paid leave days, advance owed ₹6,000, loan owed ₹14,000.
-Cut ₹6,000 advance and ₹2,000 loan, 6 leave days → leave cut ₹2,400, pay **₹7,600**.
+Example: salary ₹18,000, advance owed ₹6,000, loan owed ₹14,000.
+Cut ₹6,000 advance and ₹2,000 loan, 4 leave days → leave cut ₹2,400, pay **₹7,600**.
 Afterwards advance owed is ₹0 and loan owed is ₹12,000.
 
 ## Limits

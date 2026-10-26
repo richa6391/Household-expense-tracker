@@ -1,4 +1,4 @@
-import { extraLeaveDays, formatINR, hindiDate, longDate } from "./calc";
+import { formatINR, hindiDate, longDate } from "./calc";
 import type { Helper, Payday } from "./types";
 
 export type Lang = "en" | "hi";
@@ -27,13 +27,13 @@ function hindiMonth(monthLabel: string): string {
 
 export function buildStatement(helper: Helper, p: Payday, lang: Lang, bonus = 0): Statement {
   const minus = (n: number) => "−" + formatINR(n);
-  const extra = extraLeaveDays(p.leaveDays, helper.paidLeave);
+  const days = p.leaveDays;
   const lines: StatementLine[] = [];
   if (lang === "hi") {
     lines.push({ label: "वेतन", value: formatINR(p.salary) });
     if (p.advanceCut > 0) lines.push({ label: "एडवांस कटौती", value: minus(p.advanceCut) });
     if (p.loanCut > 0) lines.push({ label: "लोन किस्त", value: minus(p.loanCut) });
-    if (p.leaveCut > 0) lines.push({ label: `छुट्टी (${extra} अतिरिक्त दिन)`, value: minus(p.leaveCut) });
+    if (p.leaveCut > 0) lines.push({ label: `छुट्टी (${days} दिन)`, value: minus(p.leaveCut) });
     lines.push({ label: "दिया गया", value: formatINR(p.pay), strong: true });
     return {
       title: `${helper.name} — ${hindiMonth(p.monthLabel)} वेतन (${hindiDate(p.date)})`,
@@ -45,7 +45,7 @@ export function buildStatement(helper: Helper, p: Payday, lang: Lang, bonus = 0)
   lines.push({ label: "Salary", value: formatINR(p.salary) });
   if (p.advanceCut > 0) lines.push({ label: "Advance cut", value: minus(p.advanceCut) });
   if (p.loanCut > 0) lines.push({ label: "Loan instalment", value: minus(p.loanCut) });
-  if (p.leaveCut > 0) lines.push({ label: `Leave (${extra} extra day${extra === 1 ? "" : "s"})`, value: minus(p.leaveCut) });
+  if (p.leaveCut > 0) lines.push({ label: `Leave (${days} day${days === 1 ? "" : "s"})`, value: minus(p.leaveCut) });
   lines.push({ label: "Paid", value: formatINR(p.pay), strong: true });
   return {
     title: `${helper.name} — ${p.monthLabel} salary (${longDate(p.date)})`,

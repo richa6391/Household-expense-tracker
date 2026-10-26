@@ -16,7 +16,7 @@ export default function Home({ ctx }: { ctx: Ctx }) {
         <h2 className="center">Add your first helper</h2>
         <p className="center muted">Set up their salary once. After that, every advance and payday takes a few taps.</p>
         <ol className="steps">
-          <li><span><strong>Add your helper</strong> with salary, payday and paid leave.</span></li>
+          <li><span><strong>Add your helper</strong> with salary and payday.</span></li>
           <li><span><strong>Record money you give</strong> from a WhatsApp or UPI screenshot, or type it.</span></li>
           <li><span><strong>On payday</strong>, we work out the pay and a statement to share.</span></li>
         </ol>

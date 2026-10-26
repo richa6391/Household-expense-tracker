@@ -44,7 +44,6 @@ test("add helper → record (typed) → confirm → ledger → payday → paid �
   await page.getByLabel("Monthly salary").fill("18000");
   await expect(save).toBeDisabled();
   await page.getByLabel("Payday").selectOption("1");
-  await expect(page.getByLabel("Paid leave per month (days)")).toHaveValue("2");
   await page.getByRole("switch").check();
   await page.getByLabel("Advance owed").fill("3000");
   await page.getByLabel("Loan owed").fill("14000");
@@ -90,9 +89,9 @@ test("add helper → record (typed) → confirm → ledger → payday → paid �
   await page.getByRole("button", { name: /Go to payday/ }).click();
   await expect(page.getByLabel("Advance cut")).toHaveValue("6000");
   await page.getByLabel("Loan instalment").fill("2000");
-  await page.getByLabel("Leave days taken").fill("6");
+  await page.getByLabel("Leave days taken").fill("4");
   await expect(page.getByLabel("Leave cut")).toHaveValue("2400");
-  await expect(page.getByText("4 extra days × ₹600 · auto, editable")).toBeVisible();
+  await expect(page.getByText("4 days × ₹600 · auto, editable")).toBeVisible();
   await expect(page.getByTestId("pay-amount")).toHaveText("₹7,600");
   await expect(page.getByTestId("advance-after")).toHaveText("₹0");
   await expect(page.getByTestId("loan-after")).toHaveText("₹12,000");
@@ -119,10 +118,10 @@ test("add helper → record (typed) → confirm → ledger → payday → paid �
   const stmt = page.getByTestId("statement");
   await expect(stmt).toContainText("वेतन");
   await expect(stmt).toContainText("एडवांस कटौती");
-  await expect(stmt).toContainText("छुट्टी (4 अतिरिक्त दिन)");
+  await expect(stmt).toContainText("छुट्टी (4 दिन)");
   await expect(stmt).toContainText("बाकी: एडवांस ₹0 · लोन ₹12,000");
   await page.getByRole("button", { name: "English" }).click();
-  await expect(stmt).toContainText("Leave (4 extra days)");
+  await expect(stmt).toContainText("Leave (4 days)");
   await page.getByRole("button", { name: "Not now, back to helpers" }).click();
   await expect(page.getByTestId("total-owed")).toHaveText("₹12,000");
 
@@ -159,7 +158,7 @@ test("request-only screenshot shows the amber note; AI failure falls back to man
       "payslip-for-help:v1",
       JSON.stringify({
         version: 1,
-        helpers: [{ id: "h1", name: "Ramesh", role: "Driver", salary: 15000, paydayDay: 5, paidLeave: 2, createdAt: "x" }],
+        helpers: [{ id: "h1", name: "Ramesh", role: "Driver", salary: 15000, paydayDay: 5, createdAt: "x" }],
         entries: [],
         paydays: [],
       })

@@ -71,14 +71,9 @@ export function isOverSalary(amount: number, salary: number): boolean {
 
 // ---------- Payday ----------
 
-/** Leave cut = max(leaveDays − paidLeave, 0) × salary ÷ 30, rounded to nearest ₹10. */
-export function leaveCut(leaveDays: number, paidLeave: number, salary: number): number {
-  const extra = extraLeaveDays(leaveDays, paidLeave);
-  return roundTo10((extra * salary) / 30);
-}
-
-export function extraLeaveDays(leaveDays: number, paidLeave: number): number {
-  return Math.max((leaveDays || 0) - (paidLeave || 0), 0);
+/** Leave cut = leaveDays × salary ÷ 30, rounded to nearest ₹10. Every leave day is cut. */
+export function leaveCut(leaveDays: number, salary: number): number {
+  return roundTo10((Math.max(leaveDays || 0, 0) * salary) / 30);
 }
 
 export function perDayRate(salary: number): number {
