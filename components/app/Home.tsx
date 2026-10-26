@@ -1,39 +1,11 @@
 "use client";
 
-import { useRef } from "react";
 import { balances, formatINR, nextPaydayDate, ordinal, shortDate } from "@/lib/calc";
-import { isAppData } from "@/lib/storage";
 import { Chevron, Download, Plus, Users } from "../Icons";
 import { BottomBar, type Ctx, initial } from "./ui";
 
 export default function Home({ ctx }: { ctx: Ctx }) {
   const { data, today } = ctx;
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const restoreInput = (
-    <input
-      ref={fileRef}
-      type="file"
-      accept="application/json,.json"
-      className="sr-only"
-      tabIndex={-1}
-      aria-hidden="true"
-      onChange={async (e) => {
-        const f = e.target.files?.[0];
-        e.target.value = "";
-        if (!f) return;
-        try {
-          const parsed = JSON.parse(await f.text());
-          if (!isAppData(parsed)) throw new Error("bad");
-          if (data.helpers.length && !window.confirm("Replace the data on this phone with this backup?")) return;
-          ctx.update(() => parsed);
-          ctx.toast(`Restored ${parsed.helpers.length} helper${parsed.helpers.length === 1 ? "" : "s"}`);
-        } catch {
-          window.alert("That file is not a PaySlip for Help backup.");
-        }
-      }}
-    />
-  );
 
   if (!data.helpers.length) {
     return (
@@ -48,12 +20,6 @@ export default function Home({ ctx }: { ctx: Ctx }) {
           <li><span><strong>Record money you give</strong> from a WhatsApp or UPI screenshot, or type it.</span></li>
           <li><span><strong>On payday</strong>, we work out the pay and a statement to share.</span></li>
         </ol>
-        <div className="center">
-          <button type="button" className="link-btn" onClick={() => fileRef.current?.click()}>
-            Restore from a backup file
-          </button>
-          {restoreInput}
-        </div>
         <BottomBar>
           <button type="button" className="btn btn-primary" onClick={() => ctx.push({ name: "add" })}>
             <Plus /> Add helper
@@ -137,11 +103,6 @@ export default function Home({ ctx }: { ctx: Ctx }) {
           <Download size={16} style={{ verticalAlign: -3, marginRight: 4 }} />
           Download backup
         </button>
-        <span className="muted" aria-hidden="true"> · </span>
-        <button type="button" className="link-btn muted" onClick={() => fileRef.current?.click()}>
-          Restore
-        </button>
-        {restoreInput}
       </div>
 
       <BottomBar>
