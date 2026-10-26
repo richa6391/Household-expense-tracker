@@ -260,3 +260,10 @@ h2 { font-size: 22px; line-height: 1.25; margin: 0 0 8px; }
 .stmt-line.strong { font-weight: 800; border-top: 1px solid var(--border); margin-top: 4px; padding-top: 10px; }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- Search ---------- */
+.search { position: relative; margin-bottom: 12px; }
+.search .input { padding-left: 42px; padding-right: 44px; -webkit-appearance: none; appearance: none; }
+.search .input::-webkit-search-cancel-button { display: none; }
+.search-ic { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.search-clear { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); color: var(--muted); }

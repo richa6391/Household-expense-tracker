@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { balances, formatINR, nextPaydayDate, ordinal, shortDate } from "@/lib/calc";
-import { Chevron, Plus, Users } from "../Icons";
+import { Chevron, Close, Plus, Search, Users } from "../Icons";
 import { BottomBar, type Ctx, initial } from "./ui";
 
 export default function Home({ ctx }: { ctx: Ctx }) {
   const { data, today } = ctx;
+  const [query, setQuery] = useState("");
 
   if (!data.helpers.length) {
     return (
@@ -33,6 +35,10 @@ export default function Home({ ctx }: { ctx: Ctx }) {
   const next = data.helpers
     .map((h) => ({ h, date: nextPaydayDate(h.paydayDay, today, data.paydays.filter((p) => p.helperId === h.id)) }))
     .sort((a, b) => (a.date < b.date ? -1 : 1))[0];
+  const q = query.trim().toLowerCase();
+  const shown = q
+    ? data.helpers.filter((h) => h.name.toLowerCase().includes(q) || h.role.toLowerCase().includes(q))
+    : data.helpers;
 
   return (
     <>
@@ -50,7 +56,30 @@ export default function Home({ ctx }: { ctx: Ctx }) {
         )}
       </div>
 
-      {data.helpers.map((h) => {
+      <div className="search">
+        <Search size={18} className="search-ic" />
+        <input
+          type="search"
+          className="input"
+          placeholder="Search by name or role"
+          aria-label="Search helpers"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        {query && (
+          <button type="button" className="icon-btn search-clear" aria-label="Clear search" onClick={() => setQuery("")}>
+            <Close size={18} />
+          </button>
+        )}
+      </div>
+
+      {shown.length === 0 && (
+        <p className="muted center" style={{ margin: "16px 0" }}>
+          No helper matches “{query.trim()}”.
+        </p>
+      )}
+
+      {shown.map((h) => {
         const b = balances(data.entries, h.id);
         return (
           <button

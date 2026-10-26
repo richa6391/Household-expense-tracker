@@ -138,6 +138,12 @@ export const Pencil = (p: P) => (
     <path d="M4 20l1-4L16 5l3 3L8 19z" />
   </Svg>
 );
+export const Search = (p: P) => (
+  <Svg {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-3.5-3.5" />
+  </Svg>
+);
 export const Close = (p: P) => (
   <Svg {...p}>
     <path d="M6 6l12 12M18 6L6 18" />
