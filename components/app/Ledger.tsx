@@ -2,7 +2,7 @@
 
 import { balances, formatINR, givenVsRecovered, nextPaydayDate, ordinal, shortDate, sortEntries, type MonthBar } from "@/lib/calc";
 import type { Entry } from "@/lib/types";
-import { ArrowDown, ArrowUp, Calendar, Gift, Trash, Wallet } from "../Icons";
+import { ArrowDown, ArrowUp, Calendar, Gift, Plus, Trash, Wallet } from "../Icons";
 import { BottomBar, type Ctx, SOURCE_LABEL, TopBar, TYPE_LABEL } from "./ui";
 
 const ORANGE = "#E0913F";
@@ -39,6 +39,14 @@ export default function Ledger({ ctx, helperId }: { ctx: Ctx; helperId: string }
             <div className="v" data-testid="ledger-loan">{formatINR(b.loan)}</div>
           </div>
         </div>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          style={{ marginTop: 12 }}
+          onClick={() => ctx.push({ name: "record", helperId })}
+        >
+          <Plus /> Record payment
+        </button>
       </div>
 
       <Chart bars={bars} />
