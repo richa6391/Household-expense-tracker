@@ -10,7 +10,7 @@ export type EntryType =
   | "advance_cut"
   | "loan_cut";
 
-export type EntrySource = "screenshot" | "text" | "manual" | "opening" | "payday";
+export type EntrySource = "screenshot" | "text" | "voice" | "manual" | "opening" | "payday";
 
 export interface Helper {
   id: string;

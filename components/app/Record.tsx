@@ -5,15 +5,17 @@ import { resizeImage } from "@/lib/image";
 import { AI_DAILY_LIMIT, aiReadsLeft, countAiRead } from "@/lib/storage";
 import type { ExtractResult } from "@/lib/types";
 import { Camera } from "../Icons";
+import VoiceInput from "./Voice";
 import { Banner, BottomBar, type Ctx, type Notice, type View, TopBar } from "./ui";
 
 const MAX_TEXT = 1000;
 
 export default function Record({ ctx, view }: { ctx: Ctx; view: Extract<View, { name: "record" }> }) {
   const [helperId, setHelperId] = useState(view.helperId);
-  const { image, text } = ctx.record;
-  const setImage = (v: string | null) => ctx.setRecord({ image: v, text });
-  const setText = (v: string) => ctx.setRecord({ image, text: v });
+  const { image, text, voice } = ctx.record;
+  const setImage = (v: string | null) => ctx.setRecord((r) => ({ ...r, image: v }));
+  const setText = (v: string) => ctx.setRecord((r) => ({ ...r, text: v, voice: v.trim() ? r.voice : false }));
+  const setSpoken = (v: string) => ctx.setRecord((r) => ({ ...r, text: v, voice: true }));
   const [busy, setBusy] = useState(false);
   const [imgError, setImgError] = useState<string | null>(null);
   const [left] = useState(aiReadsLeft);
@@ -61,7 +63,7 @@ export default function Record({ ctx, view }: { ctx: Ctx; view: Extract<View, { 
         name: "form",
         helperId,
         mode: "ai",
-        source: image ? "screenshot" : "text",
+        source: image ? "screenshot" : voice ? "voice" : "text",
         aiType: r.type,
         notices,
         draft: {
@@ -145,7 +147,9 @@ export default function Record({ ctx, view }: { ctx: Ctx; view: Extract<View, { 
       )}
       {imgError && <p className="small" style={{ color: "var(--red)", fontWeight: 600 }}>{imgError}</p>}
 
-      <div className="divider">or type it</div>
+      <div className="divider">or speak or type it</div>
+
+      <VoiceInput text={text} onText={setSpoken} disabled={busy} />
 
       <label className="field">
         <span className="sr-only">Describe the payment</span>
@@ -156,7 +160,7 @@ export default function Record({ ctx, view }: { ctx: Ctx; view: Extract<View, { 
           onChange={(e) => setText(e.target.value)}
           placeholder={`e.g. Gave ${helper.name} 3000 advance for school fees`}
         />
-        <span className="hint">English, Hindi or Hinglish all work.</span>
+        <span className="hint">English, Hindi or Hinglish all work. Check the words before reading with AI.</span>
       </label>
 
       {left <= 0 ? (

@@ -138,6 +138,12 @@ export const Pencil = (p: P) => (
     <path d="M4 20l1-4L16 5l3 3L8 19z" />
   </Svg>
 );
+export const Mic = (p: P) => (
+  <Svg {...p}>
+    <rect x="9" y="3" width="6" height="11" rx="3" />
+    <path d="M5 11a7 7 0 0014 0M12 18v3" />
+  </Svg>
+);
 export const Search = (p: P) => (
   <Svg {...p}>
     <circle cx="11" cy="11" r="7" />

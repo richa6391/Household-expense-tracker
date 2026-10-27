@@ -11,7 +11,7 @@ import Paid from "./Paid";
 import PaydayScreen from "./PaydayScreen";
 import PaymentForm from "./PaymentForm";
 import Record from "./Record";
-import type { Ctx, View } from "./ui";
+import { EMPTY_RECORD, type Ctx, type RecordDraft, type View } from "./ui";
 
 /** history.state key holding this entry's position in the view stack. */
 const KEY = "psfh";
@@ -26,7 +26,7 @@ export default function App() {
   const pendingReset = useRef<View[] | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>();
-  const [record, setRecord] = useState<{ image: string | null; text: string }>({ image: null, text: "" });
+  const [record, setRecord] = useState<RecordDraft>(EMPTY_RECORD);
   const today = useMemo(() => localToday(), []);
 
   const setStack = (s: View[]) => {

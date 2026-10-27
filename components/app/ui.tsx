@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { AiType, AppData, EntrySource, Helper } from "@/lib/types";
 import { Back, Info, Sparkle, Warn } from "../Icons";
 
@@ -42,9 +42,18 @@ export interface Ctx {
   reset: (stack: View[]) => void;
   toast: (msg: string) => void;
   helper: (id: string) => Helper | undefined;
-  record: { image: string | null; text: string };
-  setRecord: (r: { image: string | null; text: string }) => void;
+  record: RecordDraft;
+  setRecord: Dispatch<SetStateAction<RecordDraft>>;
 }
+
+/** What's on the Record payment screen, kept while the parent checks the form. */
+export interface RecordDraft {
+  image: string | null;
+  text: string;
+  voice: boolean; // text came (at least partly) from speaking
+}
+
+export const EMPTY_RECORD: RecordDraft = { image: null, text: "", voice: false };
 
 // ---------- Pieces ----------
 
@@ -135,6 +144,7 @@ export const TYPE_LABEL: Record<string, string> = {
 export const SOURCE_LABEL: Record<EntrySource, string> = {
   screenshot: "from screenshot",
   text: "typed",
+  voice: "spoken",
   manual: "entered",
   opening: "opening balance",
   payday: "payday",

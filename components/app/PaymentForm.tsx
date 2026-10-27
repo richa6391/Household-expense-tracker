@@ -4,7 +4,7 @@ import { useState } from "react";
 import { balances, balancesAfter, formatINR, isOverSalary, isValidISODate, parseAmount } from "@/lib/calc";
 import { newId } from "@/lib/storage";
 import type { AiType, Entry } from "@/lib/types";
-import { Banner, BottomBar, type Ctx, MoneyInput, TopBar, TYPE_LABEL, type View } from "./ui";
+import { Banner, BottomBar, type Ctx, EMPTY_RECORD, MoneyInput, TopBar, TYPE_LABEL, type View } from "./ui";
 
 const TYPES: AiType[] = ["advance", "loan", "bonus", "salary", "leave"];
 
@@ -38,7 +38,7 @@ export default function PaymentForm({ ctx, view }: { ctx: Ctx; view: Extract<Vie
       createdAt: new Date().toISOString(),
     };
     ctx.update((data) => ({ ...data, entries: [...data.entries, e] }));
-    ctx.setRecord({ image: null, text: "" });
+    ctx.setRecord(EMPTY_RECORD);
     const label = type === "bonus" ? "bonus" : TYPE_LABEL[type].toLowerCase();
     ctx.toast(`Saved: ${formatINR(amt)} ${label}${e.reason ? `, ${e.reason}` : ""}`);
     ctx.reset([{ name: "home" }, { name: "ledger", helperId: helper.id }]);

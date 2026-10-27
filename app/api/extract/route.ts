@@ -37,6 +37,8 @@ Context:
 - Helper's name: ${helperName || "unknown"}. Monthly salary: ₹${salary || "unknown"}.
 - Today's date: ${today}. Resolve relative dates from this: "aaj"/"today" = today, "kal"/"yesterday" = the day before today (in a payment context "kal" means yesterday unless it clearly says future), "parso" = 2 days before. Dates on UPI receipts win over everything else. Output YYYY-MM-DD; if no date is visible use today.
 
+Typed text may come from speech-to-text, in Devanagari or Roman script, with small recognition mistakes. Read it for meaning (e.g. "तीन हज़ार" = 3000, "एडवांस" = advance).
+
 Amount:
 - Understand "3k" = 3000, "2.5k" = 2500, "teen hazaar" = 3000, "dedh hazaar" = 1500, "dhai hazaar" = 2500, "paanch sau" = 500, "ek lakh" = 100000, "₹2,500" = 2500, "Rs. 2500/-" = 2500.
 - If a UPI / bank transfer amount is visible, use it over any amount only mentioned in chat.
