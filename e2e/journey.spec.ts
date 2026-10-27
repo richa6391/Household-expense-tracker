@@ -114,13 +114,20 @@ test("add helper → record (typed) → confirm → ledger → payday → paid �
   // Paid
   await expect(page.getByTestId("paid-title")).toHaveText("Paid ₹7,600 to Sunita");
   await expect(page.getByTestId("left-to-recover")).toHaveText("Left to recover: Advance ₹0 · Loan ₹12,000");
+  // English is the default statement language.
   const stmt = page.getByTestId("statement");
+  await expect(page.getByRole("button", { name: "English" })).toHaveAttribute("aria-pressed", "true");
+  await expect(stmt).toContainText("Leave (4 days)");
+  const wa = page.getByRole("link", { name: "Share on WhatsApp" });
+  await expect(wa).toHaveAttribute("target", "_blank");
+  const href = (await wa.getAttribute("href")) || "";
+  expect(href.startsWith("https://wa.me/?text=")).toBe(true);
+  expect(decodeURIComponent(href.split("text=")[1])).toContain("Paid: ₹7,600");
+  await page.getByRole("button", { name: "हिंदी" }).click();
   await expect(stmt).toContainText("वेतन");
   await expect(stmt).toContainText("एडवांस कटौती");
   await expect(stmt).toContainText("छुट्टी (4 दिन)");
   await expect(stmt).toContainText("बाकी: एडवांस ₹0 · लोन ₹12,000");
-  await page.getByRole("button", { name: "English" }).click();
-  await expect(stmt).toContainText("Leave (4 days)");
   await page.getByRole("button", { name: "Not now, back to helpers" }).click();
   await expect(page.getByTestId("total-owed")).toHaveText("₹12,000");
 
