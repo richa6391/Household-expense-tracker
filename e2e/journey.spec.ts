@@ -118,17 +118,17 @@ test("add helper → record (typed) → confirm → ledger → payday → paid �
   const stmt = page.getByTestId("statement");
   await expect(page.getByRole("button", { name: "English" })).toHaveAttribute("aria-pressed", "true");
   await expect(stmt).toContainText("Leave (4 days)");
-  const wa = page.getByRole("link", { name: "Share on WhatsApp" });
-  await expect(wa).toHaveAttribute("target", "_blank");
-  const href = (await wa.getAttribute("href")) || "";
-  expect(href.startsWith("https://wa.me/?text=")).toBe(true);
-  expect(decodeURIComponent(href.split("text=")[1])).toContain("Paid: ₹7,600");
+  await expect(page.getByRole("link", { name: /WhatsApp/ })).toHaveCount(0);
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.getByRole("button", { name: "Copy statement" }).click();
+  await expect(page.getByText("Statement copied. Paste it in WhatsApp.")).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("Paid: ₹7,600");
   await page.getByRole("button", { name: "हिंदी" }).click();
   await expect(stmt).toContainText("वेतन");
   await expect(stmt).toContainText("एडवांस कटौती");
   await expect(stmt).toContainText("छुट्टी (4 दिन)");
   await expect(stmt).toContainText("बाकी: एडवांस ₹0 · लोन ₹12,000");
-  await page.getByRole("button", { name: "Not now, back to helpers" }).click();
+  await page.getByRole("button", { name: "Back to helpers" }).click();
   await expect(page.getByTestId("total-owed")).toHaveText("₹12,000");
 
   // A bonus never changes balances; type is required.
@@ -202,4 +202,45 @@ test("request-only screenshot shows the amber note; AI failure falls back to man
   await page.getByRole("button", { name: "Read with AI" }).click();
   await expect(page.getByRole("heading", { name: "Payment details" })).toBeVisible();
   await expect(page.getByText("AI couldn't read this. Please enter the details yourself.")).toBeVisible();
+});
+
+test("undo the last payday goes back to that month", async ({ page }) => {
+  await page.goto("/app");
+  await page.evaluate(() => {
+    const h = { id: "k", name: "Kriti", role: "Maid", salary: 2000, paydayDay: 1, createdAt: "x" };
+    const e = (id: string, type: string, amount: number, date: string, source: string) =>
+      ({ id, helperId: "k", date, type, amount, reason: "", note: "", source, createdAt: id });
+    localStorage.setItem(
+      "payslip-for-help:v1",
+      JSON.stringify({
+        version: 1,
+        helpers: [h],
+        entries: [
+          e("1", "advance", 800, "2026-10-01", "opening"),
+          e("2", "advance_cut", 800, "2026-11-01", "payday"),
+          e("3", "salary", 1200, "2026-11-01", "payday"),
+        ],
+        paydays: [
+          { id: "p1", helperId: "k", date: "2026-11-01", monthLabel: "October 2026", salary: 2000, advanceCut: 800,
+            loanCut: 0, leaveDays: 0, leaveCut: 0, pay: 1200, note: "", advanceAfter: 0, loanAfter: 0 },
+        ],
+      })
+    );
+  });
+  await page.reload();
+  await page.getByRole("button", { name: /Kriti, owes you/ }).click();
+  await page.getByRole("button", { name: /Go to payday/ }).click();
+  await expect(page.getByText("November salary, due 1 Dec")).toBeVisible();
+  await expect(page.getByText("October salary was already paid on 1 Nov (₹1,200).")).toBeVisible();
+
+  page.once("dialog", (d) => d.accept());
+  await page.getByRole("button", { name: "Undo that payday" }).click();
+  await expect(page.getByText("October payday undone")).toBeVisible();
+  await expect(page.getByText("October salary, due 1 Nov")).toBeVisible();
+  await expect(page.getByText(/already paid/)).toHaveCount(0);
+  await expect(page.getByLabel("Advance cut")).toHaveValue("800");
+
+  // Back goes to the ledger, which shows the advance owed again.
+  await page.goBack();
+  await expect(page.getByTestId("ledger-advance")).toHaveText("₹800");
 });

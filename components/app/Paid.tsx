@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { bonusesSince, formatINR } from "@/lib/calc";
 import { buildStatement, type Lang, statementText } from "@/lib/statement";
-import { Check, Share } from "../Icons";
+import { Check, Copy } from "../Icons";
 import { BottomBar, type Ctx } from "./ui";
 
 export default function Paid({ ctx, paydayId }: { ctx: Ctx; paydayId: string }) {
   const [lang, setLang] = useState<Lang>("en");
-  const [canShare, setCanShare] = useState(false);
-  useEffect(() => setCanShare(typeof navigator.share === "function"), []);
   const p = ctx.data.paydays.find((x) => x.id === paydayId);
   const helper = p && ctx.helper(p.helperId);
   if (!p || !helper) return null;
@@ -21,24 +19,12 @@ export default function Paid({ ctx, paydayId }: { ctx: Ctx; paydayId: string }) 
   const s = buildStatement(helper, p, lang, bonus);
   const text = statementText(s);
 
-  // A plain link, not window.open: browsers never block a link the user taps.
-  // wa.me opens the WhatsApp app on phones and WhatsApp Web on computers.
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(text);
-      ctx.toast("Statement copied");
+      ctx.toast("Statement copied. Paste it in WhatsApp.");
     } catch {
       window.alert("Couldn't copy. Select the statement text and copy it instead.");
-    }
-  };
-
-  const shareOther = async () => {
-    try {
-      await navigator.share({ text });
-    } catch {
-      // Cancelled or not allowed; nothing to do.
     }
   };
 
@@ -55,7 +41,7 @@ export default function Paid({ ctx, paydayId }: { ctx: Ctx; paydayId: string }) 
       </p>
 
       <div className="row" style={{ margin: "24px 0 12px" }}>
-        <strong>Share statement with {helper.name}?</strong>
+        <strong>Statement for {helper.name}</strong>
         <div className="seg" role="group" aria-label="Statement language">
           <button type="button" aria-pressed={lang === "en"} onClick={() => setLang("en")}>English</button>
           <button type="button" aria-pressed={lang === "hi"} onClick={() => setLang("hi")} lang="hi">हिंदी</button>
@@ -75,22 +61,12 @@ export default function Paid({ ctx, paydayId }: { ctx: Ctx; paydayId: string }) 
       </div>
       <p className="muted small">Bonus or gifts are listed separately and are never counted as money owed.</p>
 
-      <div className="center">
-        <button type="button" className="link-btn" onClick={copy}>Copy text</button>
-        {canShare && (
-          <>
-            <span className="muted" aria-hidden="true"> · </span>
-            <button type="button" className="link-btn" onClick={shareOther}>More share options</button>
-          </>
-        )}
-      </div>
-
       <BottomBar>
-        <a className="btn btn-primary" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-          <Share /> Share on WhatsApp
-        </a>
+        <button type="button" className="btn btn-primary" onClick={copy}>
+          <Copy /> Copy statement
+        </button>
         <button type="button" className="link-btn muted" style={{ width: "100%" }} onClick={() => ctx.reset([{ name: "home" }])}>
-          Not now, back to helpers
+          Back to helpers
         </button>
       </BottomBar>
     </>

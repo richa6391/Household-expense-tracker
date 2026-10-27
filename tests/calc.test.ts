@@ -8,11 +8,13 @@ import {
   givenVsRecovered,
   isOverSalary,
   isValidISODate,
+  lastPayday,
   leaveCut,
   markPaid,
   nextPaydayDate,
   parseAmount,
   salaryMonth,
+  undoPayday,
 } from "../lib/calc";
 import { buildStatement, statementText } from "../lib/statement";
 import type { Entry, EntryType, Helper } from "../lib/types";
@@ -179,6 +181,24 @@ describe("acceptance test", () => {
 
     // A bonus entry never changes balances.
     expect(balances([...after, entry("bonus", 2100)], "h1")).toEqual({ advance: 0, loan: 12000, total: 12000 });
+  });
+
+  it("undoPayday restores balances and the next payday", () => {
+    const entries = opening();
+    const out = markPaid({
+      helper: sunita, entries, date: "2026-11-01", monthLabel: "October 2026",
+      advanceCut: 6000, loanCut: 2000, leaveDays: 4, leaveCut: 2400, note: "", now: "x", newId,
+    });
+    const afterEntries = [...entries, ...out.entries];
+    const afterPaydays = [out.payday];
+    expect(lastPayday(afterPaydays, "h1")?.id).toBe(out.payday.id);
+    expect(nextPaydayDate(1, "2026-10-27", afterPaydays)).toBe("2026-12-01");
+
+    const undone = undoPayday(afterEntries, afterPaydays, out.payday.id);
+    expect(undone.paydays).toEqual([]);
+    expect(undone.entries).toEqual(entries);
+    expect(balances(undone.entries, "h1")).toEqual({ advance: 6000, loan: 14000, total: 20000 });
+    expect(nextPaydayDate(1, "2026-10-27", undone.paydays)).toBe("2026-11-01");
   });
 
   it("markPaid skips zero cuts and refuses an invalid payday", () => {

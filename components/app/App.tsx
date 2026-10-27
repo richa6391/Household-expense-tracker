@@ -22,6 +22,8 @@ export default function App() {
   const dataRef = useRef(data);
   const [saveFailed, setSaveFailed] = useState(false);
   const [stack, setStackState] = useState<View[]>([{ name: "home" }]);
+  // Bumped on every navigation so the screen always remounts with fresh state.
+  const [navId, setNavId] = useState(0);
   const stackRef = useRef(stack);
   const pendingReset = useRef<View[] | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -32,6 +34,7 @@ export default function App() {
   const setStack = (s: View[]) => {
     stackRef.current = s;
     setStackState(s);
+    setNavId((n) => n + 1);
   };
 
   useEffect(() => {
@@ -143,7 +146,7 @@ export default function App() {
           Couldn&apos;t save on this phone (private mode or storage full). Changes will be lost when you close this page.
         </div>
       )}
-      <main className="page" key={stack.length + top.name}>
+      <main className="page" key={navId}>
         {screen}
       </main>
       {toastMsg && (

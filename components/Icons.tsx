@@ -138,6 +138,12 @@ export const Pencil = (p: P) => (
     <path d="M4 20l1-4L16 5l3 3L8 19z" />
   </Svg>
 );
+export const Copy = (p: P) => (
+  <Svg {...p}>
+    <rect x="8" y="8" width="12" height="12" rx="2" />
+    <path d="M16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3" />
+  </Svg>
+);
 export const Mic = (p: P) => (
   <Svg {...p}>
     <rect x="9" y="3" width="6" height="11" rx="3" />

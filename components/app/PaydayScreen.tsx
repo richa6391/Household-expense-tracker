@@ -14,9 +14,11 @@ import {
   perDayRate,
   salaryMonth,
   shortDate,
+  undoPayday,
+  lastPayday,
 } from "@/lib/calc";
 import { newId } from "@/lib/storage";
-import { BottomBar, type Ctx, MoneyInput, TopBar } from "./ui";
+import { Banner, BottomBar, type Ctx, MoneyInput, TopBar } from "./ui";
 
 export default function PaydayScreen({ ctx, helperId }: { ctx: Ctx; helperId: string }) {
   const helper = ctx.helper(helperId);
@@ -48,6 +50,17 @@ export default function PaydayScreen({ ctx, helperId }: { ctx: Ctx; helperId: st
     setLeaveCut(String(calcLeaveCut(Number(clean) || 0, helper.salary)));
   };
 
+  const last = lastPayday(ctx.data.paydays, helperId);
+  const undoLast = () => {
+    if (!last) return;
+    const month = last.monthLabel.split(" ")[0];
+    if (!window.confirm(`Undo ${month} salary paid on ${shortDate(last.date)}? Its cuts are added back to what ${helper.name} owes.`)) return;
+    ctx.update((d) => ({ ...d, ...undoPayday(d.entries, d.paydays, last.id) }));
+    ctx.toast(`${month} payday undone`);
+    // Remount payday so its defaults are worked out again from the restored balances.
+    ctx.reset([{ name: "home" }, { name: "ledger", helperId }, { name: "payday", helperId }]);
+  };
+
   const pay = () => {
     if (!r.canMarkPaid) return;
     const out = markPaid({
@@ -77,6 +90,15 @@ export default function PaydayScreen({ ctx, helperId }: { ctx: Ctx; helperId: st
   return (
     <>
       <TopBar title={`Payday · ${helper.name}`} sub={`${MONTHS_LONG[sm.month]} salary, due ${shortDate(due)}`} onBack={ctx.back} />
+
+      {last && (
+        <Banner kind="info">
+          {last.monthLabel.split(" ")[0]} salary was already paid on {shortDate(last.date)} ({formatINR(last.pay)}).{" "}
+          <button type="button" className="link-btn" style={{ padding: 0, minHeight: 0 }} onClick={undoLast}>
+            Undo that payday
+          </button>
+        </Banner>
+      )}
 
       <div className="card">
         <div className="pay-row">

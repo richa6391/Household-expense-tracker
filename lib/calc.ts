@@ -178,6 +178,26 @@ export function markPaid(i: MarkPaidInput): { entries: Entry[]; payday: Payday }
   return { entries: out, payday };
 }
 
+/** The most recent payday for a helper, or null. */
+export function lastPayday(paydays: Payday[], helperId: string): Payday | null {
+  return paydays
+    .filter((p) => p.helperId === helperId)
+    .reduce<Payday | null>((a, p) => (!a || p.date > a.date ? p : a), null);
+}
+
+/**
+ * Undo a payday: remove its record and the cut and salary entries it created
+ * (source "payday", same helper and date). Only the latest payday should be undone.
+ */
+export function undoPayday(entries: Entry[], paydays: Payday[], paydayId: string): { entries: Entry[]; paydays: Payday[] } {
+  const p = paydays.find((x) => x.id === paydayId);
+  if (!p) return { entries, paydays };
+  return {
+    entries: entries.filter((e) => !(e.helperId === p.helperId && e.source === "payday" && e.date === p.date)),
+    paydays: paydays.filter((x) => x.id !== paydayId),
+  };
+}
+
 // ---------- Dates ----------
 
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
