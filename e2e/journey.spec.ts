@@ -260,12 +260,12 @@ test("Payday tab lists every helper with a Pay button or Paid status", async ({ 
         ],
         entries: [
           { id: "e1", helperId: "h2", date: t, type: "advance", amount: 2000, reason: "", note: "", source: "manual", createdAt: "x" },
-          { id: "e2", helperId: "h1", date: t, type: "salary", amount: 9000, reason: "", note: "", source: "payday", createdAt: "x" },
+          { id: "e2", helperId: "h1", date: t, type: "salary", amount: 9000, reason: "", note: "Paid in cash", source: "payday", createdAt: "x" },
         ],
         paydays: [
           {
             id: "p1", helperId: "h1", date: t, monthLabel: "September 2026", salary: 9000, advanceCut: 0, loanCut: 0,
-            leaveDays: 0, leaveCut: 0, pay: 9000, note: "", advanceAfter: 0, loanAfter: 0,
+            leaveDays: 0, leaveCut: 0, pay: 9000, note: "Paid in cash", advanceAfter: 0, loanAfter: 0,
           },
         ],
       })
@@ -282,6 +282,7 @@ test("Payday tab lists every helper with a Pay button or Paid status", async ({ 
   await expect(meena).toContainText("About ₹10,000 after ₹2,000 advance cut");
   const kriti = page.getByTestId("payday-row-Kriti");
   await expect(kriti).toContainText("Paid ₹9,000");
+  await expect(kriti).toContainText("Note: Paid in cash");
   await expect(kriti.getByRole("button")).toHaveCount(0);
   // Unpaid helpers come first.
   await expect(page.locator(".payday-card").first()).toHaveAttribute("data-testid", "payday-row-Meena");
@@ -301,4 +302,8 @@ test("Payday tab lists every helper with a Pay button or Paid status", async ({ 
   await expect(page.getByTestId("to-pay")).toHaveText("₹10,000");
   await page.getByRole("tab", { name: "My helpers" }).click();
   await expect(page.getByTestId("total-owed")).toHaveText("₹2,000");
+
+  // The payday note also shows on the ledger entry.
+  await page.getByRole("button", { name: /Kriti, owes you/ }).click();
+  await expect(page.getByText("“Paid in cash”")).toBeVisible();
 });

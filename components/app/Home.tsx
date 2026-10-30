@@ -228,10 +228,13 @@ function PaydayList({ ctx, rows }: { ctx: Ctx; rows: PaydayRow[] }) {
             </span>
           </div>
           {r.paid && r.last ? (
-            <div className="paid-badge">
-              <Check size={18} /> Paid {formatINR(r.last.pay)}
-              <span className="muted small" style={{ fontWeight: 400, marginLeft: "auto" }}>Next {shortDate(r.due)}</span>
-            </div>
+            <>
+              <div className="paid-badge">
+                <Check size={18} /> Paid {formatINR(r.last.pay)}
+                <span className="muted small" style={{ fontWeight: 400, marginLeft: "auto" }}>Next {shortDate(r.due)}</span>
+              </div>
+              {r.last.note && <p className="small entry-note" style={{ margin: "8px 0 0" }}>Note: {r.last.note}</p>}
+            </>
           ) : (
             <>
               <p className="muted small" style={{ margin: "10px 0" }}>

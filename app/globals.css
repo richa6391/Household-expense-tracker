@@ -288,3 +288,4 @@ h2 { font-size: 22px; line-height: 1.25; margin: 0 0 8px; }
   display: flex; align-items: center; gap: 6px; margin-top: 12px; padding: 10px 12px;
   border-radius: 12px; background: #e7f6ec; color: var(--green); font-weight: 700;
 }
+.entry-note { color: var(--text); margin-top: 2px; overflow-wrap: anywhere; }

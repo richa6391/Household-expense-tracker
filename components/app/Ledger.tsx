@@ -95,6 +95,7 @@ function EntryRow({ e, onDelete }: { e: Entry; onDelete?: () => void }) {
         <div className="muted small">
           {shortDate(e.date)} · {SOURCE_LABEL[e.source]}
         </div>
+        {e.note && <div className="small entry-note">“{e.note}”</div>}
       </div>
       <span className="amt" style={{ color: given ? "#A65F18" : cut ? BLUE : undefined }}>
         {cut ? "−" : given ? "+" : ""}
