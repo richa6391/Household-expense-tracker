@@ -283,7 +283,9 @@ test("Payday tab lists every helper with a Pay button or Paid status", async ({ 
   const kriti = page.getByTestId("payday-row-Kriti");
   await expect(kriti).toContainText("Paid ₹9,000");
   await expect(kriti).toContainText("Note: Paid in cash");
-  await expect(kriti.getByRole("button")).toHaveCount(0);
+  // Once paid, the next month's salary can still be paid from here.
+  await expect(kriti.getByRole("button", { name: "Pay Kriti" })).toHaveCount(0);
+  await expect(kriti.getByRole("button", { name: /^Pay \w+ salary$/ })).toBeVisible();
   // Unpaid helpers come first.
   await expect(page.locator(".payday-card").first()).toHaveAttribute("data-testid", "payday-row-Meena");
 

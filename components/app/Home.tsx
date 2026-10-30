@@ -234,6 +234,14 @@ function PaydayList({ ctx, rows }: { ctx: Ctx; rows: PaydayRow[] }) {
                 <span className="muted small" style={{ fontWeight: 400, marginLeft: "auto" }}>Next {shortDate(r.due)}</span>
               </div>
               {r.last.note && <p className="small entry-note" style={{ margin: "8px 0 0" }}>Note: {r.last.note}</p>}
+              <button
+                type="button"
+                className="btn btn-secondary"
+                style={{ marginTop: 12 }}
+                onClick={() => ctx.push({ name: "payday", helperId: r.h.id })}
+              >
+                Pay {r.month} salary
+              </button>
             </>
           ) : (
             <>
