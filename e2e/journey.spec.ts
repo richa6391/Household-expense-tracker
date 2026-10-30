@@ -244,3 +244,61 @@ test("undo the last payday goes back to that month", async ({ page }) => {
   await page.goBack();
   await expect(page.getByTestId("ledger-advance")).toHaveText("₹800");
 });
+
+test("Payday tab lists every helper with a Pay button or Paid status", async ({ page }) => {
+  await page.goto("/app");
+  const t = await today(page);
+  await page.evaluate((t) => {
+    localStorage.removeItem("payslip-for-help:home-tab");
+    localStorage.setItem(
+      "payslip-for-help:v1",
+      JSON.stringify({
+        version: 1,
+        helpers: [
+          { id: "h1", name: "Kriti", role: "Cook", salary: 9000, paydayDay: 1, createdAt: "x" },
+          { id: "h2", name: "Meena", role: "Maid", salary: 12000, paydayDay: 1, createdAt: "x" },
+        ],
+        entries: [
+          { id: "e1", helperId: "h2", date: t, type: "advance", amount: 2000, reason: "", note: "", source: "manual", createdAt: "x" },
+          { id: "e2", helperId: "h1", date: t, type: "salary", amount: 9000, reason: "", note: "", source: "payday", createdAt: "x" },
+        ],
+        paydays: [
+          {
+            id: "p1", helperId: "h1", date: t, monthLabel: "September 2026", salary: 9000, advanceCut: 0, loanCut: 0,
+            leaveDays: 0, leaveCut: 0, pay: 9000, note: "", advanceAfter: 0, loanAfter: 0,
+          },
+        ],
+      })
+    );
+  }, t);
+  await page.reload();
+
+  await expect(page.getByRole("tab", { name: "My helpers" })).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: "Payday" }).click();
+  await expect(page.getByTestId("to-pay")).toHaveText("₹10,000");
+  await expect(page.getByText("1 of 2 paid")).toBeVisible();
+
+  const meena = page.getByTestId("payday-row-Meena");
+  await expect(meena).toContainText("About ₹10,000 after ₹2,000 advance cut");
+  const kriti = page.getByTestId("payday-row-Kriti");
+  await expect(kriti).toContainText("Paid ₹9,000");
+  await expect(kriti.getByRole("button")).toHaveCount(0);
+  // Unpaid helpers come first.
+  await expect(page.locator(".payday-card").first()).toHaveAttribute("data-testid", "payday-row-Meena");
+
+  await page.getByLabel("Search helpers").fill("kri");
+  await expect(meena).toHaveCount(0);
+  await expect(kriti).toBeVisible();
+  await page.getByRole("button", { name: "Clear search" }).click();
+
+  await page.getByRole("button", { name: "Pay Meena" }).click();
+  await expect(page.getByRole("heading", { name: "Payday · Meena" })).toBeVisible();
+  await page.goBack();
+  await expect(page.getByRole("tab", { name: "Payday" })).toHaveAttribute("aria-selected", "true");
+
+  // The tab is remembered after a reload.
+  await page.reload();
+  await expect(page.getByTestId("to-pay")).toHaveText("₹10,000");
+  await page.getByRole("tab", { name: "My helpers" }).click();
+  await expect(page.getByTestId("total-owed")).toHaveText("₹2,000");
+});

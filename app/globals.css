@@ -277,3 +277,14 @@ h2 { font-size: 22px; line-height: 1.25; margin: 0 0 8px; }
 @media (prefers-reduced-motion: reduce) { .voice-btn.on { animation: none; } }
 .voice .seg button { min-width: 64px; padding: 0 10px; }
 .voice-btn { min-width: 150px; }
+
+/* ---------- Home tabs ---------- */
+.home-tabs { display: flex; width: 100%; margin: 0 0 12px; }
+.home-tabs button { flex: 1; }
+.payday-head { display: flex; gap: 12px; align-items: center; }
+.payday-head .grow { flex: 1; min-width: 0; }
+.payday-head .name { font-weight: 700; font-size: 17px; }
+.paid-badge {
+  display: flex; align-items: center; gap: 6px; margin-top: 12px; padding: 10px 12px;
+  border-radius: 12px; background: #e7f6ec; color: var(--green); font-weight: 700;
+}
